@@ -16,13 +16,32 @@ from .models import Attendance, Student
 # OpenCV付属のHaar Cascadeを使用するので、xmlを別途ダウンロードする必要はありません。
 import os
 
-# ダウンロードしたファイルの絶対パスを直接指定します
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-xml_path = os.path.join(BASE_DIR, 'haarcascade_frontalface_default.xml')
+# # ダウンロードしたファイルの絶対パスを直接指定します
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# xml_path = os.path.join(BASE_DIR, 'haarcascade_frontalface_default.xml')
+
+# FACE_CASCADE = cv2.CascadeClassifier(xml_path)
+
+ 
+# #  # OpenCV付属のHaar Cascadeを使用
+# # FACE_CASCADE = cv2.CascadeClassifier(
+# #     cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+# # )
+
+# if FACE_CASCADE.empty():
+#     raise RuntimeError("Haar Cascadeの読み込みに失敗しました")
+ 
+# OpenCVの顔検出用XML
+xml_path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    'haarcascade_frontalface_default.xml'
+)
 
 FACE_CASCADE = cv2.CascadeClassifier(xml_path)
- 
- 
+
+if FACE_CASCADE.empty():
+    raise RuntimeError("Haar Cascadeの読み込みに失敗しました")
+
 def top(request):
     return render(request, "attendance/top.html")
  
@@ -171,8 +190,9 @@ def recognize_face(request):
  
         # LBPHは数値が小さいほど近い。学校デモ用の初期値。
         # 環境によって35〜80程度で調整してください。
-        THRESHOLD = 65
- 
+        THRESHOLD = 90
+        print(f"認証結果: label={label}, confidence={confidence}")
+        
         if confidence > THRESHOLD or label not in label_map:
             return JsonResponse({
                 "ok": False,
