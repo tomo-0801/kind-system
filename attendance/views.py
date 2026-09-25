@@ -173,3 +173,19 @@ def recognize_face(request):
 
     except Exception as e:
         return _error_res(f"エラーが発生しました: {str(e)}", status=500)
+
+# --- 園児一覧画面 ---
+def student_list(request):
+    # 有効な園児一覧を取得
+    students = Student.objects.filter(is_active=True).order_by("student_number")
+    return render(request, "attendance/student_list.html", {"students": students})
+
+# --- 園児の無効化（卒園・退園処理） ---
+@require_POST
+def delete_student(request, student_id):
+    student = get_object_or_404(Student, id=student_id)
+    # 物理削除ではなく is_active を False に変更（過去の打刻データ保護のため）
+    student.is_active = False
+    student.save()
+    messages.success(request, f"{student.name} さんを非表示（退園・卒園）にしました。")
+    return redirect("attendance:student_list")
