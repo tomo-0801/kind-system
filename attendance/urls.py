@@ -13,4 +13,6 @@ urlpatterns = [
     # ... 既存のURL設定 ...
     path("students/", views.student_list, name="student_list"),
     path("students/<int:student_id>/delete/", views.delete_student, name="delete_student"),
+    path("students/", views.student_list, name="student_list"),
+    path("students/<int:student_id>/delete/", views.delete_student, name="delete_student"),
 ]
