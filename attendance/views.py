@@ -180,12 +180,32 @@ def student_list(request):
     students = Student.objects.filter(is_active=True).order_by("student_number")
     return render(request, "attendance/student_list.html", {"students": students})
 
+# --- 非表示園児一覧 ---
+def inactive_student_list(request):
+    # 非表示になっている園児だけ取得
+    students = Student.objects.filter(is_active=False).order_by("student_number")
+    return render(request, "attendance/inactive_student_list.html", {"students": students})
+
+
+# --- 園児の復元 ---
+@require_POST
+def restore_student(request, student_id):
+    student = get_object_or_404(Student, id=student_id)
+
+    # 非表示 → 表示に戻す
+    student.is_active = True
+    student.save()
+
+    messages.success(request, f"{student.name} さんを復元しました。")
+    return redirect("attendance:inactive_student_list")
+
+
 # --- 園児の無効化（卒園・退園処理） ---
 @require_POST
 def delete_student(request, student_id):
     student = get_object_or_404(Student, id=student_id)
     # 物理削除ではなく is_active を False に変更（過去の打刻データ保護のため）
-    student.is_active = True
+    student.is_active = False
     student.save()
     messages.success(request, f"{student.name} さんを非表示（退園・卒園）にしました。")
     return redirect("attendance:student_list")
