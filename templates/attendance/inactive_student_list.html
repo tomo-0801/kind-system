@@ -1,0 +1,93 @@
+{% extends "attendance/base.html" %}
+
+{% block title %}非表示園児一覧{% endblock %}
+
+{% block content %}
+<div class="card">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>非表示園児一覧</h2>
+
+        <div>
+            <a class="btn" href="{% url 'attendance:student_list' %}">
+                園児一覧に戻る
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div style="background-color: #d1fae5; color: #065f46; padding: 10px; border-radius: 6px; margin-bottom: 1rem;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="border-bottom: 2px solid #e5e7eb;">
+                <th style="padding: 10px;">顔写真</th>
+                <th style="padding: 10px;">園児番号</th>
+                <th style="padding: 10px;">園児名</th>
+                <th style="padding: 10px;">操作</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for student in students %}
+            <tr style="border-bottom: 1px solid #e5e7eb;">
+
+                <td style="padding: 10px;">
+                    {% if student.photo %}
+                        <img src="{{ student.photo.url }}"
+                             alt="{{ student.name }}"
+                             style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%;">
+                    {% else %}
+                        なし
+                    {% endif %}
+                </td>
+
+                <td style="padding: 10px;">
+                    {{ student.student_number }}
+                </td>
+
+                <td style="padding: 10px;">
+                    {{ student.name }}
+                </td>
+
+                <td style="padding: 10px;">
+
+                    <form action="{% url 'attendance:restore_student' student.id %}"
+                          method="post"
+                          onsubmit="return confirm('{{ student.name }} さんを復元しますか？');"
+                          style="margin: 0;">
+
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="btn"
+                                style="background-color: #10b981; color: white; border: none; cursor: pointer; padding: 6px 12px;">
+                            復元する
+                        </button>
+
+                    </form>
+
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+                <td colspan="4"
+                    style="padding: 20px; text-align: center; color: #6b7280;">
+                    非表示になっている園児はいません。
+                </td>
+            </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}
