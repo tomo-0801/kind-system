@@ -185,7 +185,7 @@ def student_list(request):
 def delete_student(request, student_id):
     student = get_object_or_404(Student, id=student_id)
     # 物理削除ではなく is_active を False に変更（過去の打刻データ保護のため）
-    student.is_active = False
+    student.is_active = True
     student.save()
     messages.success(request, f"{student.name} さんを非表示（退園・卒園）にしました。")
     return redirect("attendance:student_list")
