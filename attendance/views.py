@@ -140,7 +140,7 @@ def recognize_face(request):
         label, confidence = recognizer.predict(face)
         print(f"認証結果: label={label}, confidence={confidence}")
 
-        if confidence > 60 or label not in label_map:
+        if confidence > 90 or label not in label_map:
             return _error_res("登録済みの顔と一致しませんでした。", confidence=round(float(confidence), 2))
 
         student = get_object_or_404(Student, id=label_map[label])
